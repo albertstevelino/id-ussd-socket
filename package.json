@@ -1,0 +1,20 @@
+{
+  "name": "id-ussd-socket",
+  "version": "0.0.1",
+  "private": false,
+  "description": "Not an open source project. Private use only.",
+  "main": "index.js",
+  "scripts": {
+    "socket": "node src/socket/index.js --port=9001",
+    "monitor": "node index.js --port=9001"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/albertstevelino/id-ussd-socket.git"
+  },
+  "dependencies": {
+    "lodash": "^4.17.10",
+    "socket.io": "^2.1.1",
+    "yargs": "11.0.0"
+  }
+}

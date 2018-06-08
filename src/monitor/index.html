@@ -1,0 +1,148 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>USSD Scrapper - indodana</title>
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/socket.io.min.js"></script>
+    <style>
+      /*** style reset ***/
+      *, html, body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, label, fieldset, input, p, blockquote, th, td {margin:0;padding:0;}
+      table {border-collapse:collapse;border-spacing:0;}
+      fieldset, img {border:0;}
+      address, caption, cite, code, dfn, em, strong, th, var {font-style:normal;font-weight:normal;}
+      ol, ul, li {list-style:none;}
+      caption, th {text-align:left;}
+
+      /* headers using ratio of 1.333 */
+      h1 {font-size:4.209em;font-weight:normal;}  /* ~67px */
+      h2 {font-size:3.157em;font-weight:normal;}  /* ~50px */
+      h3 {font-size:2.369em;font-weight:normal;}  /* ~38px */
+      h4 {font-size:1.777em;font-weight:normal;}  /* ~28px */
+      h5 {font-size:1.333em;font-weight:normal;}  /* ~21px */
+      h6 {font-size:1em;font-weight:bold;}        /* 16px */
+
+      q:before, q:after {content:'';}
+      strong {font-weight:bold;}
+      em {font-style:italic;}
+      a img {border:none;} /* Gets rid of IE's blue borders */
+      sup {font-size:70%;}
+      a {text-decoration:none;}
+      a:hover {text-decoration:underline;}
+      * {box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;}
+
+      /* GENERAL */
+      body {
+        color: #333;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+        "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", Arial,
+        sans-serif;
+        font-size: 16px;
+        line-height: 1.429;
+      }
+
+      #template {
+        display:none;
+      }
+
+      .responsive-image {
+        max-width: 100% !important;
+        width: 100%;
+        height: auto;
+      }
+
+      .info-card {
+        border: 1px solid #ccc;
+        display: inline-block;
+        margin: 20px;
+        max-width: 480px;
+      }
+
+      .card-header {
+        border-bottom: 1px solid #ccc;
+        overflow: auto;
+        padding: 10px;
+      }
+      .logo-holder {
+        display: inline-block;
+        float: left;
+        width: 64px;
+      }
+      .provider-info,
+      .phone-number { margin-left: 84px; }
+
+      .card-content { padding: 10px; }
+      .info-title {
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+      .balance-info, .quota-info {
+        margin-bottom: 20px;
+      }
+      .info-timestamp {
+        color: gray;
+        padding-bottom: 10px;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="template" class="info-card">
+      <div class="card-header">
+        <span class="logo-holder">
+          <img class='responsive-image' src=""
+               alt="telkomsel" class="responsive-image">
+        </span>
+        <div class="provider-info">
+          <span class="provider-name">name</span>
+        </div>
+        <div class="phone-number">number</div>
+      </div>
+      <div class="card-content">
+        <div class="info-title">
+          Balance
+          <div class="balance-timestamp info-timestamp">-</div>
+        </div>
+        <div class="balance-info">-</div>
+        <div class="info-title">
+          Quota
+          <div class="quota-timestamp info-timestamp">-</div>
+        </div>
+        <div class="quota-info">-</div>
+      </div>
+    </div>
+  </body>
+
+  <script>
+  $(function () {
+    var socketUrl = 'http://localhost:9001/monitor';
+    var socket = io(socketUrl);
+
+    socket.on('update', function(payload) {
+      var $card = $('#' + payload.number);
+
+      if ($card.length === 0) {
+        // Create new
+        $card = $('#template').clone();
+        $card.attr('id', payload.number);
+        $card.find('.provider-name').text(payload.provider.name);
+        $card.find('.phone-number').text(payload.number);
+        $card.find('.responsive-image').attr('src', 'images/operator/' + payload.provider.name + '.jpeg');
+
+        $('body').append($card);
+      }
+
+      if (payload.balance) {
+        $card.find('.balance-info').text(payload.balance);
+        $card.find('.balance-timestamp').text(payload.datetime);
+      }
+
+      if (payload.quota) {
+        $card.find('.quota-info').text(payload.quota);
+        $card.find('.quota-timestamp').text(payload.datetime);
+      }
+    });
+  });
+</script>
+</html>
